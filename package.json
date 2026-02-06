@@ -1,0 +1,28 @@
+{
+  "name": "paytoll-mcp",
+  "version": "1.0.0",
+  "description": "MCP server for PayToll micro-payment API platform",
+  "type": "module",
+  "main": "dist/index.js",
+  "bin": {
+    "paytoll-mcp": "dist/index.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "dev": "tsx src/index.ts"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.12.1",
+    "@x402/fetch": "^2.2.0",
+    "@x402/evm": "^2.2.0",
+    "dotenv": "^16.4.7",
+    "viem": "^2.23.12",
+    "zod": "^3.24.2"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.0",
+    "tsx": "^4.7.0",
+    "typescript": "^5.3.3"
+  }
+}
