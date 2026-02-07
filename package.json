@@ -1,16 +1,40 @@
 {
   "name": "paytoll-mcp",
-  "version": "1.0.0",
-  "description": "MCP server for PayToll micro-payment API platform",
+  "version": "1.0.1",
+  "description": "MCP server for PayToll — DeFi intelligence and crypto utilities via x402 micro-payments",
   "type": "module",
   "main": "dist/index.js",
   "bin": {
     "paytoll-mcp": "dist/index.js"
   },
+  "files": [
+    "dist/",
+    "README.md",
+    "LICENSE"
+  ],
+  "license": "MIT",
+  "author": "PayToll",
+  "homepage": "https://paytoll.io",
+  "keywords": [
+    "mcp",
+    "openclaw",
+    "defi",
+    "aave",
+    "x402",
+    "crypto",
+    "base",
+    "ai-agents",
+    "micro-payments",
+    "usdc"
+  ],
+  "engines": {
+    "node": ">=20.0.0"
+  },
   "scripts": {
     "build": "tsc",
     "start": "node dist/index.js",
-    "dev": "tsx src/index.ts"
+    "dev": "tsx src/index.ts",
+    "prepublishOnly": "npm run build"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.12.1",

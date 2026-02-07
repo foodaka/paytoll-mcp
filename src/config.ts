@@ -5,7 +5,7 @@ import { resolve } from 'path';
 dotenv.config({ path: resolve(import.meta.dirname, '../.env') });
 
 export const config = {
-  apiUrl: process.env.PAYTOLL_API_URL || 'http://localhost:3000',
+  apiUrl: process.env.PAYTOLL_API_URL || 'https://api.paytoll.io',
   privateKey: process.env.PRIVATE_KEY || '',
 };
 
