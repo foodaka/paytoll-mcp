@@ -1,6 +1,6 @@
 # paytoll-mcp
 
-MCP server for PayToll — DeFi intelligence and crypto utilities powered by x402 micro-payments on Base. No API keys, no subscriptions. Your AI agent pays per call in USDC.
+MCP server for PayToll — DeFi, social, and AI tools powered by x402 micro-payments on Base. No API keys, no subscriptions. Your AI agent pays per call in USDC.
 
 ## Quick Start
 
@@ -8,7 +8,7 @@ MCP server for PayToll — DeFi intelligence and crypto utilities powered by x40
 PRIVATE_KEY=0xYourKey npx -y paytoll-mcp
 ```
 
-The server connects to the PayToll API, discovers all available tools, and registers them over stdio. Your agent can immediately start querying DeFi data and crypto utilities.
+The server connects to the PayToll API, discovers all available tools, and registers them over stdio. Your agent can immediately start querying DeFi data, searching Twitter, prompting LLMs, and more.
 
 ## Requirements
 
@@ -80,6 +80,25 @@ Then set your `PRIVATE_KEY` in OpenClaw's environment settings.
 | `aave-health-factor` | Calculate user's health factor | $0.005 |
 | `aave-user-positions` | Get user's supply/borrow positions | $0.01 |
 
+### DeFi Transactions (Aave)
+
+| Tool | Description | Price |
+|------|-------------|-------|
+| `aave-supply` | Build a supply (deposit) transaction | $0.01 |
+| `aave-borrow` | Build a borrow transaction | $0.01 |
+| `aave-repay` | Build a repay transaction | $0.01 |
+| `aave-withdraw` | Build a withdraw transaction | $0.01 |
+
+### Social (X / Twitter)
+
+| Tool | Description | Price |
+|------|-------------|-------|
+| `twitter-tweet-lookup` | Look up tweets by ID (max 10) | $0.06 |
+| `twitter-user-lookup` | Look up user by username or ID | $0.02 |
+| `twitter-search` | Search recent tweets (max 20 results) | $0.12 |
+| `twitter-user-tweets` | Get a user's recent tweets (max 20) | $0.12 |
+| `twitter-post` | Post a tweet (requires your OAuth token) | $0.015 |
+
 ### Crypto Utilities
 
 | Tool | Description | Price |
@@ -88,7 +107,15 @@ Then set your `PRIVATE_KEY` in OpenClaw's environment settings.
 | `ens-lookup` | Resolve ENS names to addresses | $0.001 |
 | `wallet-validator` | Validate wallet addresses | $0.0005 |
 
-Additional tools (Aave transactions, LLM proxies) are also available and will be registered automatically.
+### AI (LLM Proxy)
+
+| Tool | Description | Price |
+|------|-------------|-------|
+| `llm-openai` | GPT-4o, GPT-4 Turbo, and more | $0.01 |
+| `llm-anthropic` | Claude Sonnet, Haiku, and more | $0.01 |
+| `llm-google` | Gemini 2.0 Flash, 1.5 Pro, and more | $0.01 |
+
+All tools are discovered automatically from the API at startup.
 
 ## How It Works
 
