@@ -1,22 +1,23 @@
 import { x402Client, wrapFetchWithPayment } from '@x402/fetch';
 import { registerExactEvmScheme } from '@x402/evm/exact/client';
-import { privateKeyToAccount } from 'viem/accounts';
+import { privateKeyToAccount, type PrivateKeyAccount } from 'viem/accounts';
 import type { PayTollMeta } from './types.js';
 import { log } from './config.js';
 
 export class PayTollClient {
   private apiUrl: string;
   private fetchWithPayment: typeof fetch;
+  public readonly account: PrivateKeyAccount;
 
   constructor(apiUrl: string, privateKey: string) {
     this.apiUrl = apiUrl.replace(/\/$/, ''); // strip trailing slash
 
-    const signer = privateKeyToAccount(privateKey as `0x${string}`);
+    this.account = privateKeyToAccount(privateKey as `0x${string}`);
     const client = new x402Client();
-    registerExactEvmScheme(client, { signer });
+    registerExactEvmScheme(client, { signer: this.account });
     this.fetchWithPayment = wrapFetchWithPayment(fetch, client);
 
-    log(`Wallet: ${signer.address}`);
+    log(`Wallet: ${this.account.address}`);
   }
 
   async fetchMeta(): Promise<PayTollMeta> {
