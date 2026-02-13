@@ -23,59 +23,10 @@ A few dollars of USDC is enough for thousands of API calls.
 
 | Variable | Description | Default |
 |----------|-------------|---------|
-| `PRIVATE_KEY` | Wallet private key (hex, 0x-prefixed). Fallback option. | unset |
-| `PRIVATE_KEY_KEYCHAIN_SERVICE` | macOS Keychain service name for wallet key | unset |
-| `PRIVATE_KEY_KEYCHAIN_ACCOUNT` | macOS Keychain account (defaults to `$USER`) | `$USER` |
-| `PRIVATE_KEY_SECRET_SERVICE` | Linux Secret Service key attribute `service` | unset |
-| `PRIVATE_KEY_SECRET_ACCOUNT` | Linux Secret Service key attribute `account` (defaults to `$USER`) | `$USER` |
-| `PRIVATE_KEY_COMMAND` | Command that prints the private key to stdout | unset |
+| `PRIVATE_KEY` | Wallet private key (hex, 0x-prefixed) | **required** |
 | `PAYTOLL_API_URL` | PayToll API endpoint | `https://api.paytoll.io` |
 
-The server needs one key source:
-- `PRIVATE_KEY`
-- `PRIVATE_KEY_KEYCHAIN_SERVICE` (macOS)
-- `PRIVATE_KEY_SECRET_SERVICE` (Linux / Ubuntu)
-- `PRIVATE_KEY_COMMAND`
-
-## Secure Key Storage (Recommended)
-
-### macOS Keychain
-
-Store key once:
-
-```bash
-security add-generic-password -a "$USER" -s paytoll-mcp -w '0xYOUR_PRIVATE_KEY'
-```
-
-Then run:
-
-```bash
-PRIVATE_KEY_KEYCHAIN_SERVICE=paytoll-mcp npx -y paytoll-mcp
-```
-
-### Ubuntu (GNOME Secret Service)
-
-Install CLI:
-
-```bash
-sudo apt-get update && sudo apt-get install -y libsecret-tools
-```
-
-Store key once:
-
-```bash
-printf '0xYOUR_PRIVATE_KEY' | secret-tool store --label='PayToll MCP Wallet' service paytoll-mcp account "$USER"
-```
-
-Then run:
-
-```bash
-PRIVATE_KEY_SECRET_SERVICE=paytoll-mcp npx -y paytoll-mcp
-```
-
 ## Setup
-
-For macOS examples below, use `PRIVATE_KEY_KEYCHAIN_SERVICE`. On Ubuntu/Linux, use `PRIVATE_KEY_SECRET_SERVICE` with the same value.
 
 ### Claude Desktop
 
@@ -88,7 +39,7 @@ Add to `~/Library/Application Support/Claude/claude_desktop_config.json`:
       "command": "npx",
       "args": ["-y", "paytoll-mcp"],
       "env": {
-        "PRIVATE_KEY_KEYCHAIN_SERVICE": "paytoll-mcp"
+        "PRIVATE_KEY": "0xYourPrivateKeyHere"
       }
     }
   }
@@ -108,7 +59,7 @@ Add to `.claude/settings.json`:
       "command": "npx",
       "args": ["-y", "paytoll-mcp"],
       "env": {
-        "PRIVATE_KEY_KEYCHAIN_SERVICE": "paytoll-mcp"
+        "PRIVATE_KEY": "0xYourPrivateKeyHere"
       }
     }
   }
@@ -126,7 +77,7 @@ Add to `.cursor/mcp.json` in your project:
       "command": "npx",
       "args": ["-y", "paytoll-mcp"],
       "env": {
-        "PRIVATE_KEY_KEYCHAIN_SERVICE": "paytoll-mcp"
+        "PRIVATE_KEY": "0xYourPrivateKeyHere"
       }
     }
   }
@@ -139,15 +90,7 @@ Add to `.cursor/mcp.json` in your project:
 /install paytoll
 ```
 
-Do not set raw `PRIVATE_KEY` in OpenClaw env settings.
-
-Set one non-secret selector instead:
-- macOS: `PRIVATE_KEY_KEYCHAIN_SERVICE=paytoll-mcp`
-- Ubuntu: `PRIVATE_KEY_SECRET_SERVICE=paytoll-mcp`
-
-Optional if not using `$USER`:
-- macOS: `PRIVATE_KEY_KEYCHAIN_ACCOUNT=your-account`
-- Ubuntu: `PRIVATE_KEY_SECRET_ACCOUNT=your-account`
+Then set your `PRIVATE_KEY` in OpenClaw's environment settings.
 
 ## Available Tools (27)
 
@@ -261,7 +204,7 @@ git clone https://github.com/foodaka/paytoll-mcp.git
 cd paytoll-mcp
 npm install
 npm run build
-PRIVATE_KEY_KEYCHAIN_SERVICE=paytoll-mcp npm start
+PRIVATE_KEY=0xYourKey npm start
 ```
 
 ## License
