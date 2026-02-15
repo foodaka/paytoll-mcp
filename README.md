@@ -5,6 +5,10 @@ MCP server for [PayToll](https://paytoll.io) — 27 tools for DeFi, swaps, bridg
 ## Quick Start
 
 ```bash
+# Works without PRIVATE_KEY while API free tier is available
+npx -y paytoll-mcp
+
+# Add PRIVATE_KEY (or keychain/secret-service source) for paid/unlimited access
 PRIVATE_KEY=0xYourKey npx -y paytoll-mcp
 ```
 
@@ -15,7 +19,8 @@ The server connects to the PayToll API, discovers all available tools, and regis
 ## Requirements
 
 - Node.js 20+
-- A wallet private key with USDC on Base (+ a small amount of ETH for gas)
+- Wallet key is optional for free-tier calls
+- A wallet private key with USDC on Base (+ a small amount of ETH for gas) is required for paid calls
 
 A few dollars of USDC is enough for thousands of API calls.
 
@@ -30,12 +35,17 @@ A few dollars of USDC is enough for thousands of API calls.
 | `PRIVATE_KEY_SECRET_ACCOUNT` | Linux Secret Service key attribute `account` (defaults to `$USER`) | `$USER` |
 | `PRIVATE_KEY_COMMAND` | Command that prints the private key to stdout | unset |
 | `PAYTOLL_API_URL` | PayToll API endpoint | `https://api.paytoll.io` |
+| `FREE_TIER_DAILY_LIMIT` | Startup message hint for free-tier daily cap | `50` |
 
-The server needs one key source:
+For paid flow, the server needs one key source:
 - `PRIVATE_KEY`
 - `PRIVATE_KEY_KEYCHAIN_SERVICE` (macOS)
 - `PRIVATE_KEY_SECRET_SERVICE` (Linux / Ubuntu)
 - `PRIVATE_KEY_COMMAND`
+
+If no key source is set, the MCP server starts in free-tier mode and will return a clear error when:
+- the free tier is exhausted, or
+- the called endpoint is paid-only (for example social/X or AI paths on default API config).
 
 ## Secure Key Storage (Recommended)
 
@@ -243,6 +253,8 @@ Payment is invisible to the agent. The MCP server handles the full [x402 payment
 5. MCP server retries with the signed payment
 6. API verifies payment, executes the request, settles on Base
 7. Result is returned to the agent
+
+When no wallet key is configured, the MCP server sends plain requests first (free-tier mode). If the API returns `402`, MCP reports that a wallet key is required for paid access.
 
 Your private key **never leaves your machine**. It is only used locally to sign EIP-712 typed data for x402 payments. The PayToll API and MCP server communicate over HTTPS — the key itself is never transmitted.
 

@@ -1,6 +1,6 @@
 {
   "name": "paytoll-mcp",
-  "version": "1.0.9",
+  "version": "1.1.1",
   "description": "MCP server for PayToll — DeFi intelligence and crypto utilities via x402 micro-payments",
   "type": "module",
   "main": "dist/index.js",
