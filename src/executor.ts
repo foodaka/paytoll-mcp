@@ -108,10 +108,19 @@ async function sendAndWait(
 
 export async function executeTransaction(
   result: unknown,
-  account: LocalAccount,
+  account?: LocalAccount,
 ): Promise<unknown> {
   if (!isExecutableResponse(result)) return result;
   if (result.type === 'insufficient_balance') return result;
+  if (!account) {
+    return {
+      ...result,
+      execution: {
+        executed: false,
+        error: 'Missing PRIVATE_KEY: transaction execution requires a configured wallet.',
+      },
+    };
+  }
 
   const chainId = result.transaction.chainId;
   const chain = CHAIN_MAP[chainId];

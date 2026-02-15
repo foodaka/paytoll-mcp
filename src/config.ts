@@ -88,6 +88,7 @@ function resolvePrivateKey(): string {
 export const config = {
   apiUrl: process.env.PAYTOLL_API_URL || 'https://api.paytoll.io',
   privateKey: resolvePrivateKey(),
+  freeTierDailyLimit: Number.parseInt(process.env.FREE_TIER_DAILY_LIMIT || '50', 10) || 50,
 };
 
 export function log(message: string): void {
@@ -96,10 +97,10 @@ export function log(message: string): void {
 
 export function validateConfig(): void {
   if (!config.privateKey) {
-    log('ERROR: missing wallet private key');
-    log('Set one of: PRIVATE_KEY, PRIVATE_KEY_KEYCHAIN_SERVICE (+ optional PRIVATE_KEY_KEYCHAIN_ACCOUNT), PRIVATE_KEY_SECRET_SERVICE (+ optional PRIVATE_KEY_SECRET_ACCOUNT), or PRIVATE_KEY_COMMAND');
-    process.exit(1);
+    log(`Running in free tier mode (${config.freeTierDailyLimit} calls/day). Add PRIVATE_KEY for unlimited paid access.`);
+    return;
   }
+
   if (!config.privateKey.startsWith('0x')) {
     log('ERROR: PRIVATE_KEY must start with 0x');
     process.exit(1);

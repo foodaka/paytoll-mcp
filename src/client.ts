@@ -6,18 +6,21 @@ import { log } from './config.js';
 
 export class PayTollClient {
   private apiUrl: string;
-  private fetchWithPayment: typeof fetch;
-  public readonly account: PrivateKeyAccount;
+  private fetchWithPayment?: typeof fetch;
+  public readonly account?: PrivateKeyAccount;
 
   constructor(apiUrl: string, privateKey: string) {
     this.apiUrl = apiUrl.replace(/\/$/, ''); // strip trailing slash
 
-    this.account = privateKeyToAccount(privateKey as `0x${string}`);
-    const client = new x402Client();
-    registerExactEvmScheme(client, { signer: this.account });
-    this.fetchWithPayment = wrapFetchWithPayment(fetch, client);
-
-    log(`Wallet: ${this.account.address}`);
+    if (privateKey) {
+      this.account = privateKeyToAccount(privateKey as `0x${string}`);
+      const client = new x402Client();
+      registerExactEvmScheme(client, { signer: this.account });
+      this.fetchWithPayment = wrapFetchWithPayment(fetch, client);
+      log(`Wallet: ${this.account.address}`);
+    } else {
+      log('Wallet: none (free tier only until limit is exhausted)');
+    }
   }
 
   async fetchMeta(): Promise<PayTollMeta> {
@@ -35,13 +38,20 @@ export class PayTollClient {
   async callEndpoint(path: string, method: string, input: Record<string, unknown>): Promise<unknown> {
     const url = `${this.apiUrl}${path}`;
 
-    const response = await this.fetchWithPayment(url, {
+    const fetcher = this.fetchWithPayment || fetch;
+    const response = await fetcher(url, {
       method,
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(input),
     });
 
     const data = await response.json();
+
+    if (response.status === 402 && !this.fetchWithPayment) {
+      throw new Error(
+        'Free tier exhausted or endpoint requires payment. Configure PRIVATE_KEY (or keychain/secret service settings) to enable paid access.'
+      );
+    }
 
     if (!response.ok) {
       throw new Error(

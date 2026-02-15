@@ -11,7 +11,11 @@ const WALLET_INJECTED_FIELDS = ['userAddress'];
 export async function registerAllTools(server: McpServer, client: PayTollClient): Promise<void> {
   const meta = await client.fetchMeta();
   log(`Found ${meta.endpoints.length} endpoints`);
-  log(`Wallet auto-inject for: ${WALLET_INJECTED_FIELDS.join(', ')} → ${client.account.address}`);
+  if (client.account) {
+    log(`Wallet auto-inject for: ${WALLET_INJECTED_FIELDS.join(', ')} → ${client.account.address}`);
+  } else {
+    log('Wallet auto-inject disabled (no PRIVATE_KEY configured)');
+  }
 
   for (const endpoint of meta.endpoints) {
     if (!endpoint.inputSchema) {
@@ -39,7 +43,13 @@ export async function registerAllTools(server: McpServer, client: PayTollClient)
       async (params) => {
         try {
           // Auto-inject wallet address for fields the LLM doesn't see
-          const enrichedParams = hasWalletField
+          if (hasWalletField && !client.account) {
+            throw new Error(
+              `${endpoint.name} requires wallet context. Configure PRIVATE_KEY (or keychain/secret service settings).`
+            );
+          }
+
+          const enrichedParams = hasWalletField && client.account
             ? { ...params, userAddress: client.account.address }
             : params;
 
@@ -84,4 +94,3 @@ function stripFields(schema: InputSchema, fields: string[]) {
     required: schema.required?.filter((r) => !stripped.has(r)),
   };
 }
-
